@@ -255,33 +255,6 @@ Listar ou selecionar selos (title blocks) das folhas escolhidas.
 
 ---
 
-### 3.11 a 3.16 Memorias de Calculo (BancoCap, DimDutos, GR, InvFre, Softstarter, SPDA)
-**Arquivos:**
-- `BancoCap.pushbutton/script.py`
-- `DimDutos.pushbutton/script.py`
-- `GR.pushbutton/script.py`
-- `InvFre.pushbutton/script.py`
-- `Softstarter.pushbutton/script.py`
-- `spda.pushbutton/script.py`
-
-**Objetivo comum**
-Abrir planilhas `.xlsm` locais de memoria de calculo.
-
-**Fluxo comum**
-1. Pergunta ao usuario se possui a ultima versao da memoria de calculo.
-2. Se resposta for `Sim`:
-- Verifica existencia do arquivo em `C:\planilhas_dimensionamento\...`.
-- Tenta abrir com `os.startfile`.
-- Em falha, alerta e registra log.
-3. Se resposta for `Nao`, o script encerra sem acao adicional.
-
-**Diferenca entre scripts**
-- Apenas o caminho do arquivo Excel muda.
-
-**Pontos de atencao**
-- Dependencia forte de caminho local fixo.
-- Nao ha fallback para rede/SharePoint/repositorio.
-
 ## 4. Integracao pyRevit (bundle + UI)
 - `bundle.yaml` define titulo/tooltip multilanguage dos botoes.
 - `.xaml` define UI de ferramentas com WPF:
