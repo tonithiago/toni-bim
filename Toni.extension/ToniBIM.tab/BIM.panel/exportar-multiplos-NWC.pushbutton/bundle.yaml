@@ -1,0 +1,4 @@
+﻿title:
+  pt_br: Exportar multiplos NWC
+tooltip:
+  pt_br: Exporta um arquivo NWC para cada vista 3D selecionada, com relatorio final de sucessos e falhas.

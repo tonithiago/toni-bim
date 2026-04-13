@@ -19,12 +19,7 @@ Foram lidos todos os `script.py` do projeto:
 8. `Utilitarios.panel/Folhas.pulldown/Criar Folhas (em lotes).pushbutton/script.py`
 9. `Utilitarios.panel/Folhas.pulldown/Renomear Folhas Selecionadas.pushbutton/script.py`
 10. `Utilitarios.panel/Folhas.pulldown/Listar Selos no projeto.pushbutton/script.py`
-11. `Utilitarios.panel/Memorias de Calculo.pulldown/BancoCap.pushbutton/script.py`
-12. `Utilitarios.panel/Memorias de Calculo.pulldown/DimDutos.pushbutton/script.py`
-13. `Utilitarios.panel/Memorias de Calculo.pulldown/GR.pushbutton/script.py`
-14. `Utilitarios.panel/Memorias de Calculo.pulldown/InvFre.pushbutton/script.py`
-15. `Utilitarios.panel/Memorias de Calculo.pulldown/Softstarter.pushbutton/script.py`
-16. `Utilitarios.panel/Memorias de Calculo.pulldown/spda.pushbutton/script.py`
+
 
 Tambem foram lidos os arquivos de interface:
 - `ReOrderWindow.xaml`
