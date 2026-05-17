@@ -1,12 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Exportar Multiplos NWC"
-        Height="640" Width="560"
+        Height="660" Width="620"
+        MinHeight="560" MinWidth="560"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
-        Background="#FFF7F7F7">
-    <Grid Margin="14">
+        ResizeMode="CanResizeWithGrip"
+        Background="#FFF5F6F8">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="12,4"/>
+            <Setter Property="MinHeight" Value="30"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,10,0,0"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -16,13 +28,25 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="#FFFFFFFF" CornerRadius="6" Padding="10" BorderBrush="#FFE0E0E0" BorderThickness="1">
-            <TextBlock TextWrapping="Wrap" Foreground="#FF222222">
-                Configure a exportacao em lote para NWC. Cada vista 3D selecionada sera exportada como um arquivo separado.
-            </TextBlock>
+        <Border Grid.Row="0"
+                Background="#FFFFFFFF"
+                CornerRadius="8"
+                Padding="14"
+                BorderBrush="#FFE2E6EA"
+                BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Exportar NWCs"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#FF1F2933"/>
+                <TextBlock Margin="0,4,0,0"
+                           Text="Gere um arquivo NWC separado para cada vista 3D selecionada."
+                           TextWrapping="Wrap"
+                           Foreground="#FF5A6673"/>
+            </StackPanel>
         </Border>
 
-        <GroupBox Grid.Row="1" Header="Configuracoes" Margin="0,10,0,0" Padding="10">
+        <GroupBox Grid.Row="1" Header="Configuracoes">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -33,54 +57,97 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Coordinates:"/>
-                <ComboBox x:Name="coordinatesComboBox" Grid.Row="0" Grid.Column="1" Height="26" SelectedIndex="0">
+                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Coordenadas"/>
+                <ComboBox x:Name="coordinatesComboBox" Grid.Row="0" Grid.Column="1" Height="28" SelectedIndex="0">
                     <ComboBoxItem Content="Ponto base de projeto"/>
                     <ComboBoxItem Content="Coordenadas Compartilhadas"/>
                 </ComboBox>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0" Text="Faceting Factor:"/>
-                <TextBox x:Name="facetingTextBox" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0" Height="26" Text="40" IsReadOnly="True" Background="#FFF3F3F3"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0" Text="Faceting Factor"/>
+                <TextBox x:Name="facetingTextBox"
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         Margin="0,10,0,0"
+                         Height="28"
+                         Text="40"
+                         IsReadOnly="True"
+                         VerticalContentAlignment="Center"
+                         Background="#FFF1F3F5"/>
             </Grid>
         </GroupBox>
 
-        <GroupBox Grid.Row="2" Header="Destino" Margin="0,10,0,0" Padding="10">
+        <GroupBox Grid.Row="2" Header="Destino">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="outputFolderTextBox" Height="26" VerticalContentAlignment="Center" IsReadOnly="True"/>
-                <Button x:Name="browseFolderButton" Grid.Column="1" Margin="8,0,0,0" MinWidth="88" Height="26" Content="Selecionar"/>
+                <TextBox x:Name="outputFolderTextBox"
+                         Height="28"
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True"
+                         TextWrapping="NoWrap"/>
+                <Button x:Name="browseFolderButton"
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        MinWidth="100"
+                        Content="Selecionar"/>
             </Grid>
         </GroupBox>
 
-        <GroupBox Grid.Row="3" Header="Vistas 3D" Margin="0,10,0,0" Padding="10">
+        <GroupBox Grid.Row="3" Header="Vistas 3D">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Foreground="#FF555555" TextWrapping="Wrap">
-                    Selecione as vistas 3D exportaveis para gerar arquivos NWC individuais.
-                </TextBlock>
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0">
-                    <Button x:Name="selectAllViewsButton" MinWidth="88" Height="24" Content="Marcar todas"/>
-                    <Button x:Name="clearAllViewsButton" MinWidth="88" Height="24" Margin="8,0,0,0" Content="Limpar"/>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Foreground="#FF5A6673"
+                               TextWrapping="Wrap"
+                               Text="Selecione as vistas 3D exportaveis para gerar arquivos NWC individuais."/>
+                    <TextBlock x:Name="selectedCountTextBlock"
+                               Grid.Column="1"
+                               Margin="12,0,0,0"
+                               FontWeight="SemiBold"
+                               Foreground="#FF1F2933"
+                               Text="0 de 0 vistas selecionadas"/>
+                </Grid>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                    <Button x:Name="selectAllViewsButton" MinWidth="104" Content="Marcar todas"/>
+                    <Button x:Name="clearAllViewsButton" MinWidth="88" Margin="8,0,0,0" Content="Limpar"/>
                 </StackPanel>
-                <Border Grid.Row="2" Margin="0,8,0,0" BorderBrush="#FFD0D0D0" BorderThickness="1" Background="#FFFFFFFF">
+
+                <Border Grid.Row="2"
+                        Margin="0,10,0,0"
+                        BorderBrush="#FFD3D9DF"
+                        BorderThickness="1"
+                        Background="#FFFFFFFF"
+                        CornerRadius="4">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <StackPanel x:Name="viewsPanel" Margin="6"/>
+                        <StackPanel x:Name="viewsPanel" Margin="8"/>
                     </ScrollViewer>
                 </Border>
             </Grid>
         </GroupBox>
 
-        <Border Grid.Row="4" Margin="0,10,0,0" Background="#FFFFFFFF" BorderBrush="#FFE0E0E0" BorderThickness="1" CornerRadius="6" Padding="10">
-            <TextBlock x:Name="statusTextBlock" Foreground="#FF444444" TextWrapping="Wrap">
-                Pronto para exportar.
-            </TextBlock>
+        <Border Grid.Row="4"
+                Margin="0,10,0,0"
+                Background="#FFFFFFFF"
+                BorderBrush="#FFE2E6EA"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="10">
+            <TextBlock x:Name="statusTextBlock"
+                       Foreground="#FF4A5563"
+                       TextWrapping="Wrap"
+                       Text="Pronto para exportar."/>
         </Border>
 
         <Grid Grid.Row="5" Margin="0,12,0,0">
@@ -89,8 +156,16 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="cancelButton" Grid.Column="1" MinWidth="100" Height="32" Margin="0,0,8,0" Content="Cancelar"/>
-            <Button x:Name="exportButton" Grid.Column="2" MinWidth="120" Height="32" Content="Exportar"/>
+            <Button x:Name="cancelButton"
+                    Grid.Column="1"
+                    MinWidth="104"
+                    Margin="0,0,8,0"
+                    Content="Cancelar"/>
+            <Button x:Name="exportButton"
+                    Grid.Column="2"
+                    MinWidth="132"
+                    FontWeight="SemiBold"
+                    Content="Exportar"/>
         </Grid>
     </Grid>
 </Window>

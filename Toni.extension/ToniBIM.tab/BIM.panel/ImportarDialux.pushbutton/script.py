@@ -2,7 +2,7 @@
 __title__ = "Alocar Luminárias Dialux"
 __doc__ = """
 Versão: 5.15
-Descrição: Usa recursão em SymbolGeometry para detectar blocos DWG
+Descrição: Usa recurso em SymbolGeometry para detectar blocos DWG
 e insere famílias Revit dentro de um contexto de transação válido.
 Autor: Thiago Toni
 """
