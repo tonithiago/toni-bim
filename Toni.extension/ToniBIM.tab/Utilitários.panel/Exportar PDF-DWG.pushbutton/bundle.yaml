@@ -1,0 +1,11 @@
+title:
+  pt_br: |-
+    Exportar
+    PDF-DWG
+tooltip:
+  pt_br: |-
+    Exporta folhas para PDF e, opcionalmente, DWG usando a ordem de um indice de folhas ou conjunto de folhas.
+
+    Usa a exportacao nativa de PDF no Revit 2022 ou mais recente.
+
+    Shift-clique remove caracteres ocultos de ordenacao dos numeros das folhas.
