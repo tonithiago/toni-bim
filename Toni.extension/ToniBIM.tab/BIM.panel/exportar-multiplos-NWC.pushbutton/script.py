@@ -157,18 +157,26 @@ def _is_exportable_3d_view(view):
     return bool(view.CanBePrinted)
 
 
+def get_element_id_value(element_id):
+    """Retorna o valor numerico do ElementId em APIs antigas e novas do Revit."""
+    if hasattr(element_id, "IntegerValue"):
+        return element_id.IntegerValue
+    return element_id.Value
+
+
 def collect_exportable_3d_views(document):
     """Coleta vistas 3D unicas, validas e ordenadas por nome."""
     unique_ids = set()
     exportable = []
 
     for view in DB.FilteredElementCollector(document).OfClass(DB.View3D):
-        if view.Id.IntegerValue in unique_ids:
+        view_id_value = get_element_id_value(view.Id)
+        if view_id_value in unique_ids:
             continue
         if not _is_exportable_3d_view(view):
             continue
 
-        unique_ids.add(view.Id.IntegerValue)
+        unique_ids.add(view_id_value)
         exportable.append(view)
 
     exportable.sort(key=lambda v: v.Name.lower())

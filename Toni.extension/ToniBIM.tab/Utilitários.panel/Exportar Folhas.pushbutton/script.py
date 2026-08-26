@@ -1052,7 +1052,13 @@ class PrintSheetsWindow(forms.WPFWindow):
         self._update_combine_option()
 
     def _update_combine_option(self):
-        self.enable_element(self.combine_cb)
+        if self._export_pdf_selected():
+            self.enable_element(self.combine_cb)
+        else:
+            self.disable_element(self.combine_cb)
+            self.combine_cb.IsChecked = False
+            return
+
         if self.selected_doc.IsLinked \
                 or ((self.selected_sheetlist and self.has_print_settings)
                     and self.selected_print_setting.allows_variable_paper):
@@ -1095,6 +1101,12 @@ class PrintSheetsWindow(forms.WPFWindow):
     def _use_native_pdf_export(self):
         return IS_REVIT_2022_OR_NEWER \
             and self.selected_printer == INTERNAL_PDF_PRINTER
+
+    def _export_pdf_selected(self):
+        return bool(self.export_pdf.IsChecked)
+
+    def _export_dwg_selected(self):
+        return bool(self.export_dwg.IsChecked)
 
     def _iter_printable_named_sheets(self, target_sheets, step_count=1):
         for sheet in target_sheets:
@@ -1154,8 +1166,11 @@ class PrintSheetsWindow(forms.WPFWindow):
 
     def _export_individual_sheets(self, target_sheets, print_mgr, doc,
                                   dir_path, per_sheet_psettings,
-                                  export_dwg=False, title='Exportando PDFs... '):
-        steps_per_sheet = 2 if export_dwg else 1
+                                  export_pdf=True, export_dwg=False,
+                                  title='Exportando PDFs... '):
+        steps_per_sheet = int(bool(export_pdf)) + int(bool(export_dwg))
+        if not steps_per_sheet:
+            return
         pb_total = len(target_sheets) * steps_per_sheet
         pb_count = 1
 
@@ -1173,14 +1188,15 @@ class PrintSheetsWindow(forms.WPFWindow):
                 if per_sheet_psettings:
                     print_mgr.PrintSetup.CurrentPrintSetting = sheet.print_settings
 
-                try:
-                    progress.update_progress(pb_count, pb_total)
-                    self._export_pdf_sheet(print_mgr, doc, dir_path, sheet)
-                except Exception as export_err:
-                    logger.error('Falha ao exportar PDF da folha %s: %s',
-                                 sheet.number, export_err)
-                finally:
-                    pb_count += 1
+                if export_pdf:
+                    try:
+                        progress.update_progress(pb_count, pb_total)
+                        self._export_pdf_sheet(print_mgr, doc, dir_path, sheet)
+                    except Exception as export_err:
+                        logger.error('Falha ao exportar PDF da folha %s: %s',
+                                     sheet.number, export_err)
+                    finally:
+                        pb_count += 1
 
                 if export_dwg:
                     try:
@@ -1375,7 +1391,7 @@ class PrintSheetsWindow(forms.WPFWindow):
         dir_path = self._get_output_dir()
         doc = self.selected_doc
 
-        if self.selected_printer == INTERNAL_PDF_PRINTER or self.export_dwg.IsChecked:
+        if self.selected_printer == INTERNAL_PDF_PRINTER or self._export_dwg_selected():
             PrintUtils.open_dir(dir_path)
         with revit.Transaction('Recarregar Arquivo de Keynote',
                                doc=self.selected_doc):
@@ -1397,15 +1413,21 @@ class PrintSheetsWindow(forms.WPFWindow):
                     )
                 return
             if target_sheets:
-                export_dwg = self.export_dwg.IsChecked
-                progress_title = 'Exportando PDF e DWGs... ' \
-                    if export_dwg else 'Exportando PDFs... '
+                export_pdf = self._export_pdf_selected()
+                export_dwg = self._export_dwg_selected()
+                if export_pdf and export_dwg:
+                    progress_title = 'Exportando PDF e DWGs... '
+                elif export_dwg:
+                    progress_title = 'Exportando DWGs... '
+                else:
+                    progress_title = 'Exportando PDFs... '
                 self._export_individual_sheets(
                     target_sheets,
                     print_mgr,
                     doc,
                     dir_path,
                     per_sheet_psettings,
+                    export_pdf=export_pdf,
                     export_dwg=export_dwg,
                     title=progress_title
                     )
@@ -1712,6 +1734,7 @@ class PrintSheetsWindow(forms.WPFWindow):
 
     def options_changed(self, sender, args):
         self._reset_error()
+        self._update_combine_option()
 
         sheet_list = [x for x in self._scheduled_sheets if x.printable]
         self._update_print_indices(sheet_list)
@@ -1735,6 +1758,9 @@ class PrintSheetsWindow(forms.WPFWindow):
             self.export_dwg.IsChecked = False
             self.export_dwg.IsEnabled = False
             self.disable_element(self.dwgsettings_dp)
+
+        if not self._export_pdf_selected() and not self._export_dwg_selected():
+            self._set_error('Selecione PDF, DWG ou ambos para exportar.')
 
         self.sheet_list = sheet_list
 
@@ -1808,6 +1834,10 @@ class PrintSheetsWindow(forms.WPFWindow):
 
     def print_sheets(self, sender, args):
         if self.sheet_list:
+            if not self._export_pdf_selected() and not self._export_dwg_selected():
+                forms.alert('Selecione PDF, DWG ou ambos para exportar.')
+                return
+
             if not self.has_print_settings:
                 forms.alert('Nenhuma configuracao de impressao foi selecionada.')
                 return

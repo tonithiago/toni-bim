@@ -1,7 +1,7 @@
 title:
   pt_br: |-
     Exportar
-    PDF-DWG
+    Folhas
 tooltip:
   pt_br: |-
     Exporta folhas para PDF e, opcionalmente, DWG usando a ordem de um indice de folhas ou conjunto de folhas.
