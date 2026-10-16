@@ -25,6 +25,7 @@ import os
 import datetime
 import locale
 import time
+import tempfile
 from collections import namedtuple
 
 from pyrevit import HOST_APP, EXEC_PARAMS
@@ -796,6 +797,7 @@ class PrintSheetsWindow(forms.WPFWindow):
     def __init__(self, xaml_file_name):
         forms.WPFWindow.__init__(self, xaml_file_name)
 
+        self._output_dir = None
         self._init_psettings = None
         self._scheduled_sheets = []
         self._all_sheets_list = []
@@ -844,19 +846,26 @@ class PrintSheetsWindow(forms.WPFWindow):
     def sheet_search_changed(self, sender, args):
         search_text = self.sheetsearch_tb.Text.strip().lower() \
             if self.sheetsearch_tb.Text else ''
-        if not self._all_sheets_list:
-            return
+        sheets = self._all_sheets_list or []
+        filtered = [sheet for sheet in sheets
+                    if not search_text
+                    or search_text in (sheet.number or '').lower()
+                    or search_text in (sheet.name or '').lower()]
+        self.sheets_lb.ItemsSource = filtered
+        self._update_sheet_summary()
 
-        if not search_text:
-            self.sheets_lb.ItemsSource = self._all_sheets_list
+    def cancel_export(self, sender, args):
+        self.Close()
+
+    def _update_sheet_summary(self):
+        visible = len(list(self.sheets_lb.ItemsSource or []))
+        selected = len(list(self.sheets_lb.SelectedItems))
+        self.sheet_count_tb.Text = u'{} de {} folhas | {} selecionadas'.format(
+            visible, len(self._all_sheets_list or []), selected)
+        if visible:
+            self.hide_element(self.empty_state_tb)
         else:
-            filtered = []
-            for sheet in self._all_sheets_list:
-                number = sheet.number.lower() if sheet.number else ''
-                name = sheet.name.lower() if sheet.name else ''
-                if search_text in number or search_text in name:
-                    filtered.append(sheet)
-            self.sheets_lb.ItemsSource = filtered
+            self.show_element(self.empty_state_tb)
 
     # doc and schedule
     @property
@@ -1094,9 +1103,40 @@ class PrintSheetsWindow(forms.WPFWindow):
             return False
         return True
 
+    def choose_output_folder(self, sender, args):
+        dialog = Forms.FolderBrowserDialog()
+        try:
+            dialog.Description = 'Escolha onde salvar os arquivos PDF e DWG'
+            dialog.ShowNewFolderButton = True
+            if self._output_dir:
+                dialog.SelectedPath = self._output_dir
+            if dialog.ShowDialog() == Forms.DialogResult.OK:
+                self._output_dir = dialog.SelectedPath
+                self.output_folder_tb.Text = self._output_dir
+        finally:
+            dialog.Dispose()
+
+    def _validate_output_dir(self):
+        if not self._output_dir:
+            self.choose_output_folder(None, None)
+        if not self._output_dir:
+            return False
+        try:
+            if not op.isdir(self._output_dir):
+                raise IOError('A pasta selecionada nao esta disponivel.')
+            # Verify actual write access, including network folders.
+            with tempfile.TemporaryFile(dir=self._output_dir) as probe:
+                probe.write(b'export')
+                probe.flush()
+        except (IOError, OSError) as folder_err:
+            forms.alert('Nao foi possivel gravar na pasta selecionada. '
+                        'Escolha outra pasta de destino.',
+                        expanded=str(folder_err))
+            return False
+        return True
+
     def _get_output_dir(self):
-        dir_path = op.join(PrintUtils.get_dir(), PrintUtils.get_folder("_PRINT"))
-        return PrintUtils.ensure_dir(dir_path)
+        return self._output_dir
 
     def _use_native_pdf_export(self):
         return IS_REVIT_2022_OR_NEWER \
@@ -1813,6 +1853,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                 forms.alert('Nao ha configuracoes de impressao neste modelo.')
 
     def sheet_selection_changed(self, sender, args):
+        self._update_sheet_summary()
         if self.selected_printable_sheets:
             return self.enable_element(self.sheetopts_wp)
         self.disable_element(self.sheetopts_wp)
@@ -1876,6 +1917,9 @@ class PrintSheetsWindow(forms.WPFWindow):
                                        'ser cancelado.'.format(message),
                                        ok=False, yes=True, no=True):
                         return
+            if not self._validate_output_dir():
+                return
+
             # close window and submit print
             self.Close()
             if self.combine_print:

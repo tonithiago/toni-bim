@@ -1,0 +1,6 @@
+title:
+  pt_br: Luminárias DWG
+tooltip:
+  pt_br: Insere famílias de luminárias de um nível, sem hospedeiro, a partir dos blocos DLX_FL…LUM do DIALux.
+context: doc-project
+min_revit_version: 2026

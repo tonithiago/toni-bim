@@ -1,0 +1,6 @@
+title:
+  pt_br: Luminárias IFC
+tooltip:
+  pt_br: Insere famílias de luminárias de um nível, sem hospedeiro, a partir de um vínculo IFC carregado.
+context: doc-project
+min_revit_version: 2026
